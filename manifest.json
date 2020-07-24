@@ -1,0 +1,43 @@
+{
+    "batch": {
+        "processes": [
+            {
+                "algorithmDescription": {
+                    "en-US": "Generate informations needed on personal loan.",
+                    "pt-BR": "Gera as informações necessárias para o emprestimo consignado.",
+                    "pt-br": "Gera as informações necessárias para o emprestimo consignado."
+                },
+                "algorithmName": "emprestimo_consignado_rm",
+                "algorithmTitle": {
+                    "en-US": "Personal loan RM",
+                    "pt-BR": "Emprestimo Consignado RM"
+                },
+                "instanceProperties": {
+                    "keepInstance": "false",
+                    "luigi": {
+                        "workers": "1"
+                    },
+                    "profile": "",
+                    "properties": {
+                        "dockerImage": "consignado_carol_app_rm",
+                        "instanceMemory": "4",
+                        "instanceSize": "5",
+                        "instanceVCPUs": "2"
+                    }
+                },
+                "name": "emprestimo_consignado_rm"
+            }
+        ]
+    },
+    "docker": [
+        {
+            "dockerName": "consignado_carol_app_rm",
+            "dockerTag": "1.0.0",
+            "gitBranch": "master",
+            "gitPath": "./process_app/",
+            "instanceType": "c1.small",
+            "gitDockerfileName": "Dockerfile",
+            "gitRepoUrl": "https://github.com/rubensmg/totvs_rm"
+        }
+    ]
+}
