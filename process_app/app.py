@@ -1,6 +1,6 @@
 #!env/bin/python
 
-from dotenv import load_dotenv
+from os import getenv
 from pycarol import Carol, Tasks
 from data_ingestion import DataIngestionRM, DataIngestionParceiro
 from data_upload import DataUploadConsignado
@@ -8,10 +8,9 @@ from process import process_funcionario, process_recisao, process_geracao_folha,
 
 login = Carol()
 
-
 task = None
 
-LONGTASKID = os.getenv('LONGTASKID', '')
+LONGTASKID = getenv('LONGTASKID', '')
 
 if LONGTASKID != "":
     tasks = Tasks(login)
