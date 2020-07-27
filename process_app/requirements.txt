@@ -2,3 +2,4 @@ pycarol
 pandas
 joblib
 fastparquet
+pyarrow 

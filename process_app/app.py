@@ -1,6 +1,6 @@
 #!env/bin/python
 
-from dotenv import load_dotenv
+from os import getenv
 from pycarol import Carol, Tasks
 from data_ingestion import DataIngestionRM, DataIngestionParceiro
 from data_upload import DataUploadConsignado
@@ -11,7 +11,7 @@ login = Carol()
 
 task = None
 
-LONGTASKID = os.getenv('LONGTASKID', '')
+LONGTASKID = getenv('LONGTASKID', '')
 
 if LONGTASKID != "":
     tasks = Tasks(login)
@@ -117,8 +117,8 @@ du.funcionarios(funcionarios)
 print_carol('Upload recisao')
 du.recisao(recisao)
 
-print_carol('Upload conciliacao_emprestimo')
-du.conciliacao_emprestimo(conciliacao_emprestimo)
+# print_carol('Upload conciliacao_emprestimo')
+# du.conciliacao_emprestimo(conciliacao_emprestimo)
 
 print_carol('Upload geraco_folha')
 du.gerou_folha(geracao_folha)

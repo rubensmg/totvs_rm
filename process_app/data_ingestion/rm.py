@@ -12,9 +12,9 @@ class DataIngestion:
 
     def pfunc(self) -> DataFrame:
         staging = 'pfunc'
-        columns = ['DATAADMISSAO', 'DATADEMISSAO', 'CODPESSOA',
-                   'SALARIO', 'CHAPA', 'CODSECAO', 'CODCOLIGADA',
-                   'CODSITUACAO', 'DTPAGTORESCISAO', 'TIPODEMISSAO']
+        columns = ['DataAdmissao', 'DataDemissao', 'CodPessoa',
+                   'Salario', 'Chapa', 'CodSecao', 'CodColigada',
+                   'CodSituacao', 'DtPagtoRescisao', 'TipoDemissao']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -28,21 +28,21 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'DATAADMISSAO': 'dataadmissao',
-                    'DATADEMISSAO': 'datademissao',
-                    'CODPESSOA': 'codpessoa',
-                    'SALARIO': 'salario',
-                    'CHAPA': 'chapa',
-                    'CODSECAO': 'codsecao',
-                    'CODCOLIGADA': 'codcoligada',
-                    'CODSITUACAO': 'codsituacao',
-                    'DTPAGTORESCISAO': 'dtpagtorescisao',
-                    'TIPODEMISSAO': 'tipodemissao'
+                    'DataAdmissao': 'dataadmissao',
+                    'DataDemissao': 'datademissao',
+                    'CodPessoa': 'codpessoa',
+                    'Salario': 'salario',
+                    'Chapa': 'chapa',
+                    'CodSecao': 'codsecao',
+                    'CodColigada': 'codcoligada',
+                    'CodSituacao': 'codsituacao',
+                    'DtPagtoRescisao': 'dtpagtorescisao',
+                    'TipoDemissao': 'tipodemissao'
                 }, axis=1))
 
     def ppessoa(self) -> DataFrame:
         staging = 'ppessoa'
-        columns = ['CPF', 'NOME', 'TELEFONE1', 'TELEFONE2', 'CODIGO']
+        columns = ['cpf', 'nome', 'telefone1', 'telefone2', 'codigo']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -56,11 +56,11 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'CPF': 'cpf',
-                    'NOME': 'nome',
-                    'TELEFONE1': 'telefone1',
-                    'TELEFONE2': 'telefone2',
-                    'CODIGO': 'codigo'
+                    'cpf': 'cpf',
+                    'nome': 'nome',
+                    'telefone1': 'telefone1',
+                    'telefon2': 'telefone2',
+                    'codigo': 'codigo'
                 }, axis=1))
 
     def psecao(self) -> DataFrame:
@@ -109,7 +109,7 @@ class DataIngestion:
 
     def pfemprt(self) -> DataFrame:
         staging = 'pfemprt'
-        columns = ['CODCOLIGADA', 'CHAPA', 'SALDODEVEDOR']
+        columns = ['CodColigada', 'Chapa', 'SaldoDevedor']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -123,9 +123,9 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'CODCOLIGADA': 'codcoligada',
-                    'CHAPA': 'chapa',
-                    'SALDODEVEDOR': 'saldodevedor'
+                    'CodColigada': 'codcoligada',
+                    'Chapa': 'chapa',
+                    'SaldoDevedor': 'saldodevedor'
                 }, axis=1))
 
     def pffinanc(self) -> DataFrame:
