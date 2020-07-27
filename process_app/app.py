@@ -8,7 +8,6 @@ from process import process_funcionario, process_recisao, process_geracao_folha,
 
 login = Carol()
 
-
 task = None
 
 LONGTASKID = getenv('LONGTASKID', '')
