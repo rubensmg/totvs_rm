@@ -1,147 +1,143 @@
 {
-    "batch": {
-        "processes": [
-            {
-                "algorithmDescription": {
-                    "en-US": "Generate informations needed on personal loan.",
-                    "pt-BR": "Gera as informações necessárias para o emprestimo consignado.",
-                    "pt-br": "Gera as informações necessárias para o emprestimo consignado."
-                },
-                "algorithmName": "emprestimo_consignado",
-                "algorithmTitle": {
-                    "en-US": "Personal loan",
-                    "pt-BR": "Emprestimo Consignado"
-                },
-                "instanceProperties": {
-                    "keepInstance": "false",
-                    "luigi": {
-                        "workers": "1"
-                    },
-                    "profile": "",
-                    "properties": {
-                        "dockerImage": "consignado_carol_app",
-                        "instanceMemory": "4",
-                        "instanceSize": "5",
-                        "instanceVCPUs": "2"
-                    }
-                },
-                "name": "emprestimo_consignado"
-            },
-            {
-                "algorithmDescription": {
-                    "en-US": "Creates the file to be imported on Protheus.",
-                    "pt-BR": "Cria o arquivo a ser importado no Protheus.",
-                    "pt-br": "Cria o arquivo a ser importado no Protheus."
-                },
-                "algorithmName": "emprestimo_consignado_arquivo",
-                "algorithmTitle": {
-                    "en-US": "Personal loan file",
-                    "pt-BR": "Emprestimo Consignado Arquivo"
-                },
-                "instanceProperties": {
-                    "keepInstance": "false",
-                    "luigi": {
-                        "workers": "1"
-                    },
-                    "profile": "",
-                    "properties": {
-                        "dockerImage": "consignado_carol_app_exporter",
-                        "instanceMemory": "4",
-                        "instanceSize": "5",
-                        "instanceVCPUs": "2"
-                    }
-                },
-                "name": "emprestimo_consignado_arquivo"
-            }, 
-            {
-                "algorithmDescription": {
-                    "en-US": "Generate informations needed on personal loan.",
-                    "pt-BR": "Gera as informações necessárias para o emprestimo consignado.",
-                    "pt-br": "Gera as informações necessárias para o emprestimo consignado."
-                },
-                "algorithmName": "emprestimo_consignado_rm",
-                "algorithmTitle": {
-                    "en-US": "Personal loan RM",
-                    "pt-BR": "Emprestimo Consignado RM"
-                },
-                "instanceProperties": {
-                    "keepInstance": "false",
-                    "luigi": {
-                        "workers": "1"
-                    },
-                    "profile": "",
-                    "properties": {
-                        "dockerImage": "consignado_carol_app_rm",
-                        "instanceMemory": "4",
-                        "instanceSize": "5",
-                        "instanceVCPUs": "2"
-                    }
-                },
-                "name": "emprestimo_consignado_rm"
-            }
-        ]
-    },
-    "online": {
-        "processes": [
-            {
-                "name": "emprestimo_consignado_ui",
-                "algorithmName": "emprestimo_consignado_ui",
-                "namespace": "",
-                "algorithmTitle": {
-                    "pt-br": "Consignado UI",
-                    "en-US": "Loan project UI"
-                },
-                "algorithmDescription": {
-                    "pt-br": "Consignado UI",
-                    "en-US": "Loan project UI"
-                },
-                "instanceProperties": {
-                    "profile": "",
-                    "properties": {
-                        "dockerImage": "consignado_carol_app_ui",
-                        "instanceMemory": "2",
-                        "instanceVCPUs": "0.5"
-                    }
-                }
-            }
-        ]
-    },
-    "docker": [
-        {
-            "dockerName": "consignado_carol_app",
-            "dockerTag": "1.0.0",
-            "gitBranch": "master",
-            "gitPath": "./app_consignado/process_app/",
-            "instanceType": "c1.small",
-            "gitDockerfileName": "Dockerfile",
-            "gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
-        },
-        {
-            "dockerName": "consignado_carol_app_exporter",
-            "dockerTag": "1.0.0",
-            "gitBranch": "master",
-            "gitPath": "./app_consignado/file_export/",
-            "instanceType": "c1.small",
-            "gitDockerfileName": "Dockerfile",
-            "gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
-        },
-        {
-            "dockerName": "consignado_carol_app_ui",
-            "dockerTag": "1.0.0",
-            "gitBranch": "master",
-            "gitPath": "./app_consignado/ui/",
-            "instanceType": "c1.small",
-            "gitDockerfileName": "Dockerfile",
-            "gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
-        },
-        {
-            "dockerName": "consignado_carol_app_rm",
-            "dockerTag": "1.0.0",
-            "gitBranch": "master",
-            "gitPath": "./process_app/",
-            "instanceType": "c1.small",
-            "gitDockerfileName": "Dockerfile",
-            "gitRepoUrl": "https://github.com/rubensmg/totvs_rm"
-        }
-    ]
+	"batch": {
+		"processes": [{
+				"algorithmDescription": {
+					"en-US": "Generate informations needed on personal loan.",
+					"pt-BR": "Gera as informações necessárias para o emprestimo consignado.",
+					"pt-br": "Gera as informações necessárias para o emprestimo consignado."
+				},
+				"algorithmName": "emprestimo_consignado",
+				"algorithmTitle": {
+					"en-US": "Personal loan",
+					"pt-BR": "Emprestimo Consignado"
+				},
+				"instanceProperties": {
+					"keepInstance": "false",
+					"luigi": {
+						"workers": "1"
+					},
+					"profile": "",
+					"properties": {
+						"dockerName": "consignado_carol_app",
+						"instanceMemory": "4",
+						"instanceSize": "5",
+						"instanceVCPUs": "2"
+					}
+				},
+				"name": "emprestimo_consignado"
+			},
+			{
+				"algorithmDescription": {
+					"en-US": "Creates the file to be imported on Protheus.",
+					"pt-BR": "Cria o arquivo a ser importado no Protheus.",
+					"pt-br": "Cria o arquivo a ser importado no Protheus."
+				},
+				"algorithmName": "emprestimo_consignado_arquivo",
+				"algorithmTitle": {
+					"en-US": "Personal loan file",
+					"pt-BR": "Emprestimo Consignado Arquivo"
+				},
+				"instanceProperties": {
+					"keepInstance": "false",
+					"luigi": {
+						"workers": "1"
+					},
+					"profile": "",
+					"properties": {
+						"dockerName": "consignado_carol_app_exporter",
+						"instanceMemory": "4",
+						"instanceSize": "5",
+						"instanceVCPUs": "2"
+					}
+				},
+				"name": "emprestimo_consignado_arquivo"
+			},
+			{
+				"algorithmDescription": {
+					"en-US": "Generate informations needed on personal loan.",
+					"pt-BR": "Gera as informações necessárias para o emprestimo consignado.",
+					"pt-br": "Gera as informações necessárias para o emprestimo consignado."
+				},
+				"algorithmName": "emprestimo_consignado_rm",
+				"algorithmTitle": {
+					"en-US": "Personal loan RM",
+					"pt-BR": "Emprestimo Consignado RM"
+				},
+				"instanceProperties": {
+					"keepInstance": "false",
+					"luigi": {
+						"workers": "1"
+					},
+					"profile": "",
+					"properties": {
+						"dockerName": "consignado_carol_app_rm",
+						"instanceMemory": "4",
+						"instanceSize": "5",
+						"instanceVCPUs": "2"
+					}
+				},
+				"name": "emprestimo_consignado_rm"
+			}
+		]
+	},
+	"online": {
+		"processes": [{
+			"name": "emprestimo_consignado_ui",
+			"algorithmName": "emprestimo_consignado_ui",
+			"namespace": "",
+			"algorithmTitle": {
+				"pt-br": "Consignado UI",
+				"en-US": "Loan project UI"
+			},
+			"algorithmDescription": {
+				"pt-br": "Consignado UI",
+				"en-US": "Loan project UI"
+			},
+			"instanceProperties": {
+				"profile": "",
+				"properties": {
+					"dockerName": "consignado_carol_app_ui",
+					"instanceMemory": "2",
+					"instanceVCPUs": "0.5"
+				}
+			}
+		}]
+	},
+	"docker": [{
+			"dockerName": "consignado_carol_app",
+			"dockerTag": "1.0.1",
+			"gitBranch": "master",
+			"gitPath": "./app_consignado/process_app/",
+			"instanceType": "c1.small",
+			"gitDockerfileName": "Dockerfile",
+			"gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
+		},
+		{
+			"dockerName": "consignado_carol_app_exporter",
+			"dockerTag": "1.0.1",
+			"gitBranch": "master",
+			"gitPath": "./app_consignado/file_export/",
+			"instanceType": "c1.small",
+			"gitDockerfileName": "Dockerfile",
+			"gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
+		},
+		{
+			"dockerName": "consignado_carol_app_ui",
+			"dockerTag": "1.0.1",
+			"gitBranch": "master",
+			"gitPath": "./app_consignado/ui/",
+			"instanceType": "c1.small",
+			"gitDockerfileName": "Dockerfile",
+			"gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
+		},
+		{
+			"dockerName": "consignado_carol_app_rm",
+			"dockerTag": "1.0.0",
+			"gitBranch": "master",
+			"gitPath": "./process_app/",
+			"instanceType": "c1.small",
+			"gitDockerfileName": "Dockerfile",
+			"gitRepoUrl": "https://github.com/rubensmg/totvs_rm"
+		}
+	]
 }
