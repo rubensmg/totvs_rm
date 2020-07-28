@@ -77,6 +77,32 @@
 					}
 				},
 				"name": "emprestimo_consignado_rm"
+			},
+			{
+				"algorithmDescription": {
+					"en-US": "Creates the file to be imported on Protheus.",
+					"pt-BR": "Cria o arquivo a ser importado no Protheus.",
+					"pt-br": "Cria o arquivo a ser importado no Protheus."
+				},
+				"algorithmName": "emprestimo_consignado_arquivo_rm",
+				"algorithmTitle": {
+					"en-US": "Personal loan file",
+					"pt-BR": "Emprestimo Consignado Arquivo"
+				},
+				"instanceProperties": {
+					"keepInstance": "false",
+					"luigi": {
+						"workers": "1"
+					},
+					"profile": "",
+					"properties": {
+						"dockerName": "consignado_carol_app_exporter_rm",
+						"instanceMemory": "4",
+						"instanceSize": "5",
+						"instanceVCPUs": "2"
+					}
+				},
+				"name": "emprestimo_consignado_arquivo_rm"
 			}
 		]
 	},
@@ -138,6 +164,15 @@
 			"instanceType": "c1.small",
 			"gitDockerfileName": "Dockerfile",
 			"gitRepoUrl": "https://github.com/rubensmg/totvs_rm"
+		},
+		{
+			"dockerName": "consignado_carol_app_exporter_rm",
+			"dockerTag": "1.0.0",
+			"gitBranch": "master",
+			"gitPath": "./file_export/",
+			"instanceType": "c1.small",
+			"gitDockerfileName": "Dockerfile",
+			"gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
 		}
 	]
 }
