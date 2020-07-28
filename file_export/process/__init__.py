@@ -1,7 +1,7 @@
 from pandas import DataFrame, to_datetime
 
 
-def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pffinanc: DataFrame, pparamadicionais: DataFrame, emprestimo: DataFrame, gerou_folha: DataFrame) -> DataFrame:
+def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pffinanc: DataFrame, pparamadicionais: DataFrame, emprestimo: DataFrame, funcionarios: DataFrame, gerou_folha: DataFrame) -> DataFrame:
     """
         TODO: Doc String
     """
@@ -24,10 +24,17 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
             .merge(_pffinanc_valor_averbado, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='left')
             .merge(_emprestimo_periodo, left_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], right_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], how='left')
             .merge(gerou_folha, left_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], right_on=['cnpj', 'cpf', 'ano', 'mes'], how='left')
-            .assign(valornaoaverbado=lambda df: df['valoraverbado'] - df['valor_parcela']))
+            .merge(funcionarios, left_on=['cnpj', 'cpf'], right_on=['cnpj', 'cpffuncionario'], how='left')
+            .assign(valornaoaverbado=lambda df: df['valoraverbado'] - df['valor_parcela'])
+            .assign(motivo=lambda df: '')
+            .assign(status_parcela=lambda df: '')
+            .assign(periodo=lambda df: df['anocomp'].astype(str) + df['mescomp'].astype(str).str.pad(2, side='left', fillchar='0'))
+            .fillna({'gerou_folha': True, 'consignavel': 0.0}))
 
-    df.loc[df['valor_parcela'] > df['margemconsignavel'], 'motivo'] = 'Valor da parcela superior a margem consignavel'
-    df.loc[df['gerou_folha'] == False, 'motivo'] = 'Não houve geração de folha para esse funcionário nesta data'
+    if len(df) > 0:
+        df.loc[df['valor_parcela'] > df['consignavel'], 'motivo'] = 'Valor da parcela superior a margem consignavel'
+        df.loc[df['gerou_folha'] == False, 'motivo'] = 'Não houve geração de folha para esse funcionário nesta data'
+    
     df['status_parcela'] = df['motivo'].apply(lambda x: 'Aberta' if x == '' else 'Erro')
 
     return df[['cnpj', 'cpf', 'periodo', 'valoraverbado', 'valornaoaverbado', 'motivo', 'status_parcela', 'numero_da_parcela', 'codigo_emprestimo']]
@@ -62,10 +69,10 @@ def process_geracao_arquivo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFr
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
-            .merge(_emprestimo_periodo, left_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], right_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], how='left')
+            .merge(_emprestimo_periodo, left_on=['cnpj', 'cpf'], right_on=['cnpj', 'cpf'], how='left')
             .assign(horapagamento=lambda df: to_datetime(df['vencimento_parcela']).dt.strftime('%H:%M'))
             .assign(datapagamento=lambda df: to_datetime(df['vencimento_parcela']).dt.strftime('%Y-%m-%d'))
-            .rename({ 'valor_parcela': 'valor', 'numero_parcela': 'referencia' }, axis=1)
+            .rename({ 'valor_parcela': 'valor', 'numero_da_parcela': 'referencia' }, axis=1)
             [[ 'chapa', 'datapagamento', 'horapagamento', 'valor', 'referencia' ]]
     )
 

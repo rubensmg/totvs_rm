@@ -10,7 +10,7 @@ login = Carol()
 
 task = None
 
-LONGTASKID = os.getenv('LONGTASKID', '')
+LONGTASKID = getenv('LONGTASKID', '')
 
 if LONGTASKID != "":
     tasks = Tasks(login)
@@ -48,20 +48,23 @@ pparamadicionais = di_rm.pparamadicionais()
 print_carol('Downloading emprestimo')
 emprestimo = di_parceiro.emprestimo()
 
+print_carol('Downloading funcionarios')
+funcionarios = di_consignado.funcionarios()
+
 print_carol('Downloading gerou_folha')
 gerou_folha = di_consignado.gerou_folha()
 
 print_carol('Processing conciliacao_emprestimo')
-
 conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
                                                         ppessoa,
                                                         psecao,
                                                         pffinanc,
                                                         pparamadicionais,
                                                         emprestimo,
+                                                        funcionarios,
                                                         gerou_folha)
 
-
+print_carol('Processing file')
 conciliacao_emprestimo_geracao_arquivo = process_geracao_arquivo(pfunc,
                                                                 ppessoa,
                                                                 psecao,
