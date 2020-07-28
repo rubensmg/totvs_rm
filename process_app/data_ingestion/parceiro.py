@@ -9,7 +9,7 @@ class DataIngestion:
 
     def __init__(self, login: Carol):
         self.stag = Staging(login)
-        
+
     def emprestimo(self) -> DataFrame:
         staging = 'emprestimo'
         columns = ['numero_da_parcela', 'codigo_emprestimo', 'cnpj', 'cpf', 'valor_parcela', 'vencimento_parcela']
