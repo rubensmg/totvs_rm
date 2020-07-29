@@ -82,13 +82,13 @@ recisao = process_recisao(pfunc,
                           trecisao,
                           pparamadicionais)
 
-# print_carol('Processing conciliacao_emprestimo')
-# conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
-#                                                         ppessoa,
-#                                                         psecao,
-#                                                         pffinanc,
-#                                                         pparamadicionais,
-#                                                         emprestimo)
+print_carol('Processing conciliacao_emprestimo')
+conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
+                                                        ppessoa,
+                                                        psecao,
+                                                        pffinanc,
+                                                        pparamadicionais,
+                                                        emprestimo)
 
 print_carol('Processing geracao_folha')
 geracao_folha = process_geracao_folha(pfunc,
@@ -116,8 +116,8 @@ du.funcionarios(funcionarios)
 print_carol('Upload recisao')
 du.recisao(recisao)
 
-# print_carol('Upload conciliacao_emprestimo')
-# du.conciliacao_emprestimo(conciliacao_emprestimo)
+print_carol('Upload conciliacao_emprestimo')
+du.conciliacao_emprestimo(conciliacao_emprestimo)
 
 print_carol('Upload geraco_folha')
 du.gerou_folha(geracao_folha)

@@ -1,4 +1,5 @@
 from pandas import DataFrame, IntervalIndex, DateOffset, to_datetime, to_numeric
+from pandas.tseries.offsets import MonthEnd
 from datetime import datetime, timedelta
 
 
@@ -113,9 +114,20 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
 def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFrame, psecao: DataFrame, pfhstaft: DataFrame) -> DataFrame:
     """
         TODO: doc string
-    """
 
-    return (pfunc
+        Afastamento menor ou igual a 15 dias, não deve ser levado para a staging Gerou Folha.
+	        Exemplo 1: Início em 25/06 e término em 30/06 - 5 dias(Não deve constar na Gerou Folha)
+	        Exemplo 2: Início em 25/06 e término em 10/07 - 15 dias(Não deve constar na Gerou Folha)
+        Afastamento maior que 15 dias deve verificar se contempla o mês inteiro, caso positivo deve ser levado para o Gerou Folha. Caso negativo o mês não deve ser considerado no Gerou Folha.
+	        Exemplo 1: Início em 15/05 e término em 10/07 - 56 dias(Deve levar para o gerou folha, apenas a informação referente ao mês 6)
+	        Exemplo 2: Início em 15/05 e término em 15/06 - 30 dias(Não deve levar o funcionário para o Gerou Folha)
+        Afastamento sem data final, deve verificar se contempla o mês inteiro, caso positivo deve ser levado para o Gerou Folha
+	        Exemplo 1: Início em 20/04 e sem datafim(Deve levar para o mês 6 e para os meses seguintes até existir uma datafim)
+	        Exemplo 2: Início em 15/04 e sem datafim(Deve levar para o mês 5, 6 e para os meses seguintes até existir uma datafim)
+    """
+    #  .query('(_dtinicio - _dtfinal).dt.days > 15') 
+
+    df = (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .query('codsituacao != "E" & codsituacao != "W" & codsituacao != "R"')
@@ -124,9 +136,10 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
             .assign(_dtinicio=lambda df: df['dtinicio'])
             .assign(_dtfinal=lambda df: df['dtfinal'])
             .replace({ '_dtfinal': '0001-01-01T00:00:00.000Z', '_dtinicial': '0001-01-01T00:00:00.000Z' }, '2099-12-31T23:59:59.000Z')
-            .assign(_dtinicio=lambda df: to_datetime(df['_dtinicio'], format='%Y-%m-%dT%H:%M:%S.%f'))
-            .assign(_dtfinal=lambda df: to_datetime(df['_dtfinal'], format='%Y-%m-%dT%H:%M:%S.%f'))
-            .query('(_dtinicio - _dtfinal).dt.days > 15')
+            .assign(_dtinicio=lambda df: to_datetime(df['_dtinicio'], format='%Y-%m-%dT%H:%M:%S.%f').dt.tz_convert(None))
+            .assign(_dtfinal=lambda df: to_datetime(df['_dtfinal'], format='%Y-%m-%dT%H:%M:%S.%f').dt.tz_convert(None))
+            .assign(_dtcomp_endmonth=lambda df: to_datetime(df['mescomp'].astype(str) + '-' + df['anocomp'].astype(str), format='%m-%Y') + MonthEnd(0))
+            .query('(_dtinicio.dt.month <= mescomp & _dtinicio.dt.year <= anocomp) & (_dtfinal.dt.month >= mescomp & _dtfinal.dt.year >= anocomp) & (_dtfinal - _dtinicio).dt.days > 15 & abs((_dtcomp_endmonth - _dtfinal).dt.days) > 15')
             .assign(gerou_folha=lambda df: ((df['_dtinicio'].dt.month == df['mescomp']) & (df['_dtinicio'].dt.year == df['anocomp'])) | ((df['_dtfinal'].dt.month == df['mescomp']) & (df['_dtfinal'].dt.year == df['anocomp'])))
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
             [[
@@ -136,6 +149,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
                 'anocomp': 'ano',
                 'mescomp': 'mes'
             }, axis=1))
+    print(df)
 
 
 def process_count_faixa(pfunc: DataFrame, psecao: DataFrame, tsalarycount: DataFrame) -> DataFrame:
