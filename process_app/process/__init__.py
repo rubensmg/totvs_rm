@@ -1,5 +1,5 @@
 from pandas import DataFrame, IntervalIndex, DateOffset, to_datetime, to_numeric
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def process_funcionario(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pfperff: DataFrame, pfemprt: DataFrame, pparam: DataFrame, pffinanc: DataFrame) -> DataFrame:
@@ -69,10 +69,10 @@ def process_recisao(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pff
     return (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
-            .assign(periodo=lambda df: to_datetime(df['datademissao'], format='%Y-%m-%dT%H:%M:%S.%f').dt.strftime('%Y%m'))
-            .merge(_pffinanc_valor_averbado,  left_on=['codcoligada', 'chapa', 'periodo'], right_on=['codcoligada', 'chapa', 'periodo'], how='left')
             .merge(trecisao, left_on=['tipodemissao'], right_on=['tipodemissao_rm'], how='inner')
             .query('codsituacao == "D" & tipodemissao != 5 & tipodemissao != 6')
+            .assign(periodo=lambda df: to_datetime(df['datademissao'], format='%Y-%m-%dT%H:%M:%S.%f').dt.strftime('%Y%m'))
+            .merge(_pffinanc_valor_averbado,  left_on=['codcoligada', 'chapa', 'periodo'], right_on=['codcoligada', 'chapa', 'periodo'], how='left')
             .assign(valor_descontado=lambda df: df['valoraverbado'])
             .assign(desc_recisao=lambda df: '')
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
@@ -97,10 +97,6 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
                                 .drop_duplicates()
                                 .rename({'valor': 'valoraverbado'}, axis=1))
 
-    _emprestimo_periodo = (emprestimo
-                           .assign(anocomp=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%d %H:%M:%S').dt.year)
-                           .assign(mescomp=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%d %H:%M:%S').dt.month))
-
     return (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
@@ -122,11 +118,15 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
     return (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
-            .merge(pparam, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
-            .merge(pfhstaft, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='left')
             .query('codsituacao != "E" & codsituacao != "W" & codsituacao != "R"')
-            .assign(_dtinicio=lambda df: to_datetime(df['dtinicio'], format='%Y-%m-%dT%H:%M:%S.%f'))
-            .assign(_dtfinal=lambda df: to_datetime(df['dtfinal'], format='%Y-%m-%dT%H:%M:%S.%f'))
+            .merge(pparam, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
+            .merge(pfhstaft, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='inner')
+            .assign(_dtinicio=lambda df: df['dtinicio'])
+            .assign(_dtfinal=lambda df: df['dtfinal'])
+            .replace({ '_dtfinal': '0001-01-01T00:00:00.000Z', '_dtinicial': '0001-01-01T00:00:00.000Z' }, '2099-12-31T23:59:59.000Z')
+            .assign(_dtinicio=lambda df: to_datetime(df['_dtinicio'], format='%Y-%m-%dT%H:%M:%S.%f'))
+            .assign(_dtfinal=lambda df: to_datetime(df['_dtfinal'], format='%Y-%m-%dT%H:%M:%S.%f'))
+            .query('(_dtinicio - _dtfinal).dt.days > 15')
             .assign(gerou_folha=lambda df: ((df['_dtinicio'].dt.month == df['mescomp']) & (df['_dtinicio'].dt.year == df['anocomp'])) | ((df['_dtfinal'].dt.month == df['mescomp']) & (df['_dtfinal'].dt.year == df['anocomp'])))
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
             [[

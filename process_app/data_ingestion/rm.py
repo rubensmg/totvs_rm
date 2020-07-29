@@ -42,7 +42,7 @@ class DataIngestion:
 
     def ppessoa(self) -> DataFrame:
         staging = 'ppessoa'
-        columns = ['cpf', 'nome', 'telefone1', 'telefone2', 'codigo']
+        columns = ['CPF', 'Nome', 'Telefone1', 'Telefone2', 'Codigo']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -56,16 +56,16 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'cpf': 'cpf',
-                    'nome': 'nome',
-                    'telefone1': 'telefone1',
-                    'telefon2': 'telefone2',
-                    'codigo': 'codigo'
+                    'CPF': 'cpf',
+                    'Nome': 'nome',
+                    'Telefone1': 'telefone1',
+                    'Telefon2': 'telefone2',
+                    'Codigo': 'codigo'
                 }, axis=1))
 
     def psecao(self) -> DataFrame:
         staging = 'psecao'
-        columns = ['CODIGO', 'CODCOLIGADA', 'CGC']
+        columns = ['Codigo', 'CodColigada', 'CGC']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -79,8 +79,8 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'CODIGO': 'codigo',
-                    'CODCOLIGADA': 'codcoligada',
+                    'Codigo': 'codigo',
+                    'CodColigada': 'codcoligada',
                     'CGC': 'cgc'
                 }, axis=1))
 
@@ -195,7 +195,7 @@ class DataIngestion:
 
     def pfhstaft(self) -> DataFrame:
         staging = 'pfhstaft'
-        columns = ['CODCOLIGADA', 'CHAPA', 'DTINICIO', 'DTFINAL']
+        columns = ['CodColigada', 'Chapa', 'DtInicio', 'DtFinal']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -209,10 +209,10 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'CODCOLIGADA': 'codcoligada',
-                    'CHAPA': 'chapa',
-                    'DTINICIO': 'dtinicio',
-                    'DTFINAL': 'dtfinal'
+                    'CodColigada': 'codcoligada',
+                    'Chapa': 'chapa',
+                    'DtInicio': 'dtinicio',
+                    'DtFinal': 'dtfinal'
                 }, axis=1))
 
     def tsalarycount(self) -> DataFrame:
