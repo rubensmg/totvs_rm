@@ -148,8 +148,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
             .rename({
                 'anocomp': 'ano',
                 'mescomp': 'mes'
-            }, axis=1))
-    print(df)
+            }, axis=1)
 
 
 def process_count_faixa(pfunc: DataFrame, psecao: DataFrame, tsalarycount: DataFrame) -> DataFrame:

@@ -116,8 +116,8 @@ du.funcionarios(funcionarios)
 print_carol('Upload recisao')
 du.recisao(recisao)
 
-print_carol('Upload conciliacao_emprestimo')
-du.conciliacao_emprestimo(conciliacao_emprestimo)
+# print_carol('Upload conciliacao_emprestimo')
+# du.conciliacao_emprestimo(conciliacao_emprestimo)
 
 print_carol('Upload geraco_folha')
 du.gerou_folha(geracao_folha)
