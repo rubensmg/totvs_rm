@@ -82,13 +82,13 @@ recisao = process_recisao(pfunc,
                           trecisao,
                           pparamadicionais)
 
-print_carol('Processing conciliacao_emprestimo')
-conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
-                                                        ppessoa,
-                                                        psecao,
-                                                        pffinanc,
-                                                        pparamadicionais,
-                                                        emprestimo)
+# print_carol('Processing conciliacao_emprestimo')
+# conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
+#                                                         ppessoa,
+#                                                         psecao,
+#                                                         pffinanc,
+#                                                         pparamadicionais,
+#                                                         emprestimo)
 
 print_carol('Processing geracao_folha')
 geracao_folha = process_geracao_folha(pfunc,

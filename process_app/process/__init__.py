@@ -127,7 +127,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
     """
     #  .query('(_dtinicio - _dtfinal).dt.days > 15') 
 
-    df = (pfunc
+    return (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .query('codsituacao != "E" & codsituacao != "W" & codsituacao != "R"')
@@ -148,7 +148,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
             .rename({
                 'anocomp': 'ano',
                 'mescomp': 'mes'
-            }, axis=1)
+            }, axis=1))
 
 
 def process_count_faixa(pfunc: DataFrame, psecao: DataFrame, tsalarycount: DataFrame) -> DataFrame:
