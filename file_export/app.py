@@ -68,6 +68,8 @@ print_carol('Processing file')
 conciliacao_emprestimo_geracao_arquivo = process_geracao_arquivo(pfunc,
                                                                 ppessoa,
                                                                 psecao,
+                                                                pffinanc,
+                                                                pparamadicionais,
                                                                 emprestimo)
 
 print_carol('Uploading conciliacao_emprestimo')
