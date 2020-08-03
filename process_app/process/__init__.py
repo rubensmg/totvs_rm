@@ -139,7 +139,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
             .assign(_dtinicio=lambda df: to_datetime(df['_dtinicio'], format='%Y-%m-%dT%H:%M:%S.%f').dt.tz_convert(None))
             .assign(_dtfinal=lambda df: to_datetime(df['_dtfinal'], format='%Y-%m-%dT%H:%M:%S.%f').dt.tz_convert(None))
             .assign(_dtcomp_endmonth=lambda df: to_datetime(df['mescomp'].astype(str) + '-' + df['anocomp'].astype(str), format='%m-%Y') + MonthEnd(0))
-            .query('(_dtinicio.dt.month <= mescomp & _dtinicio.dt.year <= anocomp) & (_dtfinal.dt.month >= mescomp & _dtfinal.dt.year >= anocomp) & (_dtfinal - _dtinicio).dt.days > 15 & abs((_dtcomp_endmonth - _dtfinal).dt.days) > 15')
+            .query('(_dtinicio.dt.month <= mescomp & _dtinicio.dt.year <= anocomp) & (_dtfinal.dt.month >= mescomp & _dtfinal.dt.year >= anocomp) & (_dtfinal - _dtinicio).dt.days > 15 & abs((_dtcomp_endmonth - _dtinicio).dt.days) > 15 & _dtcomp_endmonth <= _dtfinal')
             .assign(gerou_folha=lambda df: ((df['_dtinicio'].dt.month == df['mescomp']) & (df['_dtinicio'].dt.year == df['anocomp'])) | ((df['_dtfinal'].dt.month == df['mescomp']) & (df['_dtfinal'].dt.year == df['anocomp'])))
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
             [[

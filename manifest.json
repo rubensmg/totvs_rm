@@ -172,7 +172,7 @@
 			"gitPath": "./file_export/",
 			"instanceType": "c1.small",
 			"gitDockerfileName": "Dockerfile",
-			"gitRepoUrl": "https://dev.azure.com/totvstfs/Techfin/_git/techfin_consignado"
+			"gitRepoUrl": "https://github.com/rubensmg/totvs_rm"
 		}
 	]
 }
