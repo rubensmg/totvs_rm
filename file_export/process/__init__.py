@@ -15,8 +15,9 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
     _emprestimo_periodo = (emprestimo
                            .assign(_vencimento_parcela=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%dT%H:%M:%S.%f'))
                            .assign(anocomp=lambda df: df['_vencimento_parcela'].dt.year)
-                           .assign(mescomp=lambda df: df['_vencimento_parcela'].dt.month))
-
+                           .assign(mescomp=lambda df: df['_vencimento_parcela'].dt.month)
+                           .assign(periodo=lambda df: df['anocomp'].astype(str) + df['mescomp'].astype(str).str.pad(2, side='left', fillchar='0'))
+                        )
     
     df = (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
@@ -27,7 +28,6 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
             .assign(valornaoaverbado=lambda df: df['valoraverbado'] - df['valor_parcela'])
             .assign(motivo=lambda df: '')
             .assign(status_parcela=lambda df: '')
-            .assign(periodo=lambda df: df['anocomp'].astype(str) + df['mescomp'].astype(str).str.pad(2, side='left', fillchar='0'))
     )
 
     if len(df) > 0 and len(gerou_folha) > 0 and len(funcionarios) > 0:
