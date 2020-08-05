@@ -39,8 +39,8 @@ ppessoa = di_rm.ppessoa()
 print_carol('Downloading pescao')
 psecao = di_rm.psecao()
 
-print_carol('Downloading pffinanc')
-pffinanc = di_rm.pffinanc()
+print_carol('Downloading pparam')
+pparam = di_rm.pparam()
 
 print_carol('Download pparamadicionais')
 pparamadicionais = di_rm.pparamadicionais()
@@ -58,7 +58,7 @@ print_carol('Processing conciliacao_emprestimo')
 conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
                                                         ppessoa,
                                                         psecao,
-                                                        pffinanc,
+                                                        pparam,
                                                         pparamadicionais,
                                                         emprestimo,
                                                         funcionarios,
@@ -68,7 +68,7 @@ print_carol('Processing file')
 conciliacao_emprestimo_geracao_arquivo = process_geracao_arquivo(pfunc,
                                                                 ppessoa,
                                                                 psecao,
-                                                                pffinanc,
+                                                                pparam,
                                                                 pparamadicionais,
                                                                 emprestimo)
 

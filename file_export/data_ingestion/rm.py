@@ -85,10 +85,9 @@ class DataIngestion:
                 }, axis=1))
 
 
-    def pffinanc(self) -> DataFrame:
-        staging = 'pffinanc'
-        columns = ['Chapa', 'CodColigada', 'Valor',
-                   'CodEvento', 'AnoComp', 'MesComp']
+    def pparam(self) -> DataFrame:
+        staging = 'pparam'
+        columns = ['AnoComp', 'MesComp', 'CodColigada']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -102,12 +101,9 @@ class DataIngestion:
                                         callback=None,
                                         cds=True)
                 .rename({
-                    'Chapa': 'chapa',
-                    'CodColigada': 'codcoligada',
-                    'Valor': 'valor',
-                    'CodEvento': 'codeventos',
                     'AnoComp': 'anocomp',
-                    'MesComp': 'mescomp'
+                    'MesComp': 'mescomp',
+                    'CodColigada': 'codcoligada'
                 }, axis=1))
 
     def pparamadicionais(self) -> DataFrame:
