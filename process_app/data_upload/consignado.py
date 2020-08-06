@@ -41,7 +41,6 @@ class DataUpload:
                                 force=True,
                                 max_workers=5)
 
-    @upload_development_generate_csv
     def conciliacao_emprestimo(self, df: DataFrame):
         # Validate Size
         staging = 'conciliacao_emprestimo'

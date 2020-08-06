@@ -2,7 +2,7 @@
 
 from os import getenv
 from pycarol import Carol, Tasks
-from data_ingestion import DataIngestionRM, DataIngestionParceiro
+from data_ingestion import DataIngestionRM, DataIngestionParceiro, DataIngestionConsignado
 from data_upload import DataUploadConsignado
 from process import process_funcionario, process_recisao, process_geracao_folha, process_count_faixa, process_media_salarial, process_turnover, process_conciliacao_emprestimo
 
@@ -27,6 +27,7 @@ def print_carol(msg, log_level="INFO"):
 
 di_rm = DataIngestionRM(login)
 di_parceiro = DataIngestionParceiro(login)
+di_consignado = DataIngestionConsignado(login)
 du = DataUploadConsignado(login)
 
 print_carol('Downloading pfunc')
@@ -65,68 +66,74 @@ pparamadicionais = di_rm.pparamadicionais()
 print_carol('Download emprestimo')
 emprestimo = di_parceiro.emprestimo()
 
-print_carol('Processing funcionario')
-funcionarios = process_funcionario(pfunc,
-                                   ppessoa,
-                                   psecao,
-                                   pfperff,
-                                   pfemprt,
-                                   pparam,
-                                   pffinanc)
+print_carol('Download conciliacao_emprestimo')
+conciliacao_emprestimo = di_consignado.conciliacao_emprestimo()
 
-print_carol('Processing recisao')
-recisao = process_recisao(pfunc,
-                          ppessoa,
-                          psecao,
-                          pffinanc,
-                          trecisao,
-                          pparamadicionais)
+# print_carol('Processing funcionario')
+# funcionarios = process_funcionario(pfunc,
+#                                    ppessoa,
+#                                    psecao,
+#                                    pfperff,
+#                                    pfemprt,
+#                                    pparam,
+#                                    pffinanc)
 
-# print_carol('Processing conciliacao_emprestimo')
-# conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
-#                                                         ppessoa,
-#                                                         psecao,
-#                                                         pffinanc,
-#                                                         pparamadicionais,
-#                                                         emprestimo)
+# print_carol('Processing recisao')
+# recisao = process_recisao(pfunc,
+#                           ppessoa,
+#                           psecao,
+#                           pffinanc,
+#                           trecisao,
+#                           pparamadicionais)
 
-print_carol('Processing geracao_folha')
-geracao_folha = process_geracao_folha(pfunc,
-                                      ppessoa,
-                                      pparam,
-                                      psecao,
-                                      pfhstaft)
+print_carol('Processing conciliacao_emprestimo')
+conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
+                                                        ppessoa,
+                                                        psecao,
+                                                        pffinanc,
+                                                        pparam,
+                                                        pparamadicionais,
+                                                        emprestimo,
+                                                        conciliacao_emprestimo)
+print(conciliacao_emprestimo)
 
-print_carol('Processing count_faixa')
-count_faixa = process_count_faixa(pfunc,
-                                  psecao,
-                                  tsalarycount)
+# print_carol('Processing geracao_folha')
+# geracao_folha = process_geracao_folha(pfunc,
+#                                       ppessoa,
+#                                       pparam,
+#                                       psecao,
+#                                       pfhstaft)
 
-print_carol('Processing media_salarial')
-media_salarial = process_media_salarial(pfunc,
-                                        psecao)
+# print_carol('Processing count_faixa')
+# count_faixa = process_count_faixa(pfunc,
+#                                   psecao,
+#                                   tsalarycount)
 
-print_carol('Processing turnover')
-turnover = process_turnover(pfunc,
-                            psecao)
+# print_carol('Processing media_salarial')
+# media_salarial = process_media_salarial(pfunc,
+#                                         psecao)
 
-print_carol('Upload funcionarios')
-du.funcionarios(funcionarios)
+# print_carol('Processing turnover')
+# turnover = process_turnover(pfunc,
+#                             psecao)
 
-print_carol('Upload recisao')
-du.recisao(recisao)
+# print_carol('Upload funcionarios')
+# du.funcionarios(funcionarios)
+
+# print_carol('Upload recisao')
+# du.recisao(recisao)
 
 # print_carol('Upload conciliacao_emprestimo')
 # du.conciliacao_emprestimo(conciliacao_emprestimo)
 
-print_carol('Upload geraco_folha')
-du.gerou_folha(geracao_folha)
+# print_carol('Upload geraco_folha')
+# du.gerou_folha(geracao_folha)
 
-print_carol('Upload count_faixa')
-du.count_faixa(count_faixa)
+# print_carol('Upload count_faixa')
+# du.count_faixa(count_faixa)
 
-print_carol('Upload media_salarial')
-du.media_salarial(media_salarial)
+# print_carol('Upload media_salarial')
+# du.media_salarial(media_salarial)
 
-print_carol('Upload turnover')
-du.turnover(turnover)
+# print_carol('Upload turnover')
+# du.turnover(turnover)
