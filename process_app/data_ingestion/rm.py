@@ -172,7 +172,6 @@ class DataIngestion:
             'H': 'Dispensa sem justa causa'
         }.items()), columns=['tipodemissao_rm', 'tiporecisao'])
 
-    @ingestion_development_cache
     def pparam(self) -> DataFrame:
         staging = 'pparam'
         columns = ['AnoComp', 'MesComp', 'CodColigada']
@@ -225,7 +224,6 @@ class DataIngestion:
             ('de15001ainf', float(max_range*step+1.0), float('inf')))
         return DataFrame(data=range_salary, columns=['identifier', 'init', 'end'])
 
-    @ingestion_development_cache
     def pparamadicionais(self) -> DataFrame:
         staging = 'pparamadicionais'
         columns = ['CodColigada', 'AnoCompCarolPFFINANC', 'AnoCompCarolPFPERFF', 'EventoBaseBV', 'EventoBaseCreditas',

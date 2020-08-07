@@ -44,7 +44,7 @@ class DataUpload:
     def conciliacao_emprestimo(self, df: DataFrame):
         # Validate Size
         staging = 'conciliacao_emprestimo'
-        crosswalk = ['cnpj', 'matriculafuncionario']
+        crosswalk = ['cnpj', 'codigo_emprestimo', 'cpffuncionario', 'periodo']
 
         if len(df) > 0:
             self.stag.send_data(data=df,
