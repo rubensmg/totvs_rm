@@ -106,10 +106,12 @@ class DataIngestion:
                     'CodColigada': 'codcoligada'
                 }, axis=1))
 
+    @ingestion_development_cache
     def pparamadicionais(self) -> DataFrame:
         staging = 'pparamadicionais'
         columns = ['CodColigada', 'AnoCompCarolPFFINANC', 'AnoCompCarolPFPERFF', 'EventoBaseBV', 'EventoBaseCreditas',
-                   'EventoDescontoBV', 'EventoDescontoCreditas', 'MesCompCarolPFFINANC', 'MesCompCarolPFPERFF']
+                    'IntegradoBV',  'IntegradoCreditas', 'EventoDescontoBV', 'EventoDescontoCreditas', 'MesCompCarolPFFINANC',
+                    'MesCompCarolPFPERFF']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -127,6 +129,8 @@ class DataIngestion:
                     'AnoCompCarolPFFINANC': 'anocompcarolpffinanc',
                     'AnoCompCarolPFPERFF': 'anocompcarolpfperff',
                     'EventoBaseBV': 'eventobasebv',
+                    'IntegradoBV': 'integradobv',
+                    'IntegradoCreditas': 'integradocreditas',
                     'EventoBaseCreditas': 'eventobasecreditas',
                     'EventoDescontoBV': 'eventodescontobv',
                     'EventoDescontoCreditas': 'eventodescontocreditas',

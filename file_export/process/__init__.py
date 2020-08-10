@@ -1,16 +1,9 @@
 from pandas import DataFrame, to_datetime
 
-def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pparam: DataFrame, pparamadicionais: DataFrame, emprestimo: DataFrame, funcionarios: DataFrame, gerou_folha: DataFrame) -> DataFrame:
+def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pparam: DataFrame, emprestimo: DataFrame, funcionarios: DataFrame, gerou_folha: DataFrame) -> DataFrame:
     """
         TODO: Doc String
     """
-
-    # _pffinanc_valor_averbado = (pffinanc
-    #                         .merge(pparamadicionais, left_on=['codcoligada', 'anocomp', 'mescomp'], right_on=['codcoligada', 'anocompcarolpffinanc', 'mescompcarolpffinanc'], how='inner')
-    #                         [['chapa', 'codcoligada', 'anocomp', 'mescomp', 'valor']]
-    #                         .assign(valor=lambda df: df['valor'].astype(float))
-    #                         .groupby(by=['codcoligada', 'chapa', 'anocomp', 'mescomp'])['valor'].sum().reset_index()
-    #                         .rename({'valor': 'valoraverbado'}, axis=1))
     
     _emprestimo_periodo = (emprestimo
                            .assign(_vencimento_parcela=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%dT%H:%M:%S.%f'))
@@ -49,39 +42,11 @@ def process_conciliacao_emprestimo(pfunc: DataFrame, ppessoa: DataFrame, psecao:
                 'valoraverbado': 'valor_averbado'
             }, axis=1))
 
-    # df = (funcionarios
-    #       .assign(cnpj=lambda df: df['cnpj'].str.replace(r'\.|\/|\-', ''))
-    #       .merge(_emprestimo_periodo, left_on=['cnpj', 'cpf'], right_on=['cnpj', 'cpf'], how='inner')
-    #       .assign(_anocomp=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%d %H:%M:%S').dt.year)
-    #       .assign(_mescomp=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%d %H:%M:%S').dt.month)
-    #       .merge(gerou_folha, left_on=['cnpj', 'cpf', '_anocomp', '_mescomp'], right_on=['cnpj', 'cpf', 'ano', 'mes'], how='left')
-    #       .assign(_periodo=lambda df: df['_anocomp'].astype(str) + df['_mescomp'].astype(str).str.pad(2, side='left', fillchar='0'))
-    #       .merge(_pffinanc_valor_averbado, left_on=['cnpj', 'cpf'], right_on=['cnpj', 'cpf'], how='inner')
-    #       .fillna({'gerou_folha': True, 'margemconsignavel': 0.0})
-    #       .assign(motivo=lambda df: '')
-    #     )
-
-        
-    # df.loc[df['valor_parcela'] > df['margemconsignavel'], 'motivo'] = 'Valor da parcela superior a margem consignavel'
-    # df.loc[df['gerou_folha'] == False, 'motivo'] = 'Não houve geração de folha para esse funcionário nesta data'
-    # df['status_parcela'] = df['motivo'].apply(lambda x: 'Aberta' if x == '' else 'Erro')
-
 def process_geracao_arquivo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pparam: DataFrame, pparamadicionais: DataFrame, emprestimo: DataFrame) -> DataFrame:
     """
         TODO: Doc String
     """
     
-    # _pffinanc_valor_averbado = (pffinanc
-    #                         .merge(pparamadicionais, left_on=['codcoligada', 'anocomp', 'mescomp'], right_on=['codcoligada', 'anocompcarolpffinanc', 'mescompcarolpffinanc'], how='inner')
-    #                         [['chapa', 'codcoligada', 'anocomp', 'mescomp', 'valor']]
-    #                         .assign(valor=lambda df: df['valor'].astype(float))
-    #                         .groupby(by=['codcoligada', 'chapa', 'anocomp', 'mescomp'])['valor'].sum().reset_index()
-    #                         .rename({'valor': 'valoraverbado'}, axis=1))
-
-    # .merge(_pffinanc_valor_averbado, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='left')
-    
-    # .assign(valornaoaverbado=lambda df: df['valoraverbado'] - df['valor_parcela'])
-
     _emprestimo_periodo = (emprestimo
                            .assign(_vencimento_parcela=lambda df: to_datetime(df['vencimento_parcela'], format='%Y-%m-%dT%H:%M:%S.%f'))
                            .assign(datapagamento=lambda df: df['_vencimento_parcela'].dt.strftime('%d%m%Y'))
@@ -96,23 +61,12 @@ def process_geracao_arquivo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFr
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
             .merge(pparam, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
             .merge(_emprestimo_periodo, left_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], right_on=['cnpj', 'cpf', 'anocomp', 'mescomp'], how='inner')
+            .merge(pparamadicionais, left_on=['codcoligada', 'anocomp', 'mescomp'], right_on=['codcoligada', 'anocompcarolpffinanc', 'mescompcarolpffinanc'], how='inner')
             .assign(referencia=lambda df: df['numero_da_parcela'].astype(float))
             .rename({ 'valor_parcela': 'valor' }, axis=1)
-            [[ 'chapa', 'datapagamento', 'horapagamento', 'referencia', 'valor' ]]
         )
 
-    return df
+    df.loc[df['integradocreditas'] == True, 'evento'] = df['eventodescontobv'].astype(str)
+    df.loc[df['integradobv'] == True, 'evento'] = df['eventodescontocreditas'].astype(str)
 
-    # return (funcionarios
-    #       .assign(cnpj=lambda df: df['cnpj'].str.replace(r'\.|\/|\-', ''))
-    #       .merge(emprestimo, left_on=['cnpj', 'cpf'], right_on=['cnpj', 'cpf'], how='inner')
-    #       .assign(_numero_parcela=lambda df: df['numero_da_parcela'])
-    #       .assign(_vencimento_parcela=lambda df: to_datetime(df['vencimento_parcela']))
-    #       .assign(_anocomp=lambda df: df['_vencimento_parcela'].dt.year)
-    #       .assign(_mescomp=lambda df: df['_vencimento_parcela'].dt.month)
-    #       .merge(gerou_folha, left_on=['cnpj', 'cpf', '_anocomp', '_mescomp'], right_on=['cnpj', 'cpf', 'ano', 'mes'], how='left')
-    #       .assign(_periodo=lambda df: df['_anocomp'].astype(str) + df['_mescomp'].astype(str).str.pad(2, side='left', fillchar='0'))
-    #       .assign(horapagamento=lambda df: df['_vencimento_parcela'].dt.strftime('%H:%M'))
-    #       .rename({ 'matriculafuncionario': 'chapa', 'valor_parcela': 'valor', '_numero_parcela': 'referencia' }, axis=1)
-    #       [[ 'chapa', 'datapagamento', 'horapagamento', 'valor', 'referencia' ]]
-    #     )
+    return df[[ 'chapa', 'datapagamento', 'horapagamento', 'referencia', 'valor', 'evento' ]]

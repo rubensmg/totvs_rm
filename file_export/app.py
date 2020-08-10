@@ -59,7 +59,6 @@ conciliacao_emprestimo = process_conciliacao_emprestimo(pfunc,
                                                         ppessoa,
                                                         psecao,
                                                         pparam,
-                                                        pparamadicionais,
                                                         emprestimo,
                                                         funcionarios,
                                                         gerou_folha)
