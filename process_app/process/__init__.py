@@ -1,4 +1,4 @@
-from pandas import DataFrame, IntervalIndex, DateOffset, to_datetime, to_numeric
+from pandas import DataFrame, IntervalIndex, DateOffset, to_datetime, to_numeric, concat
 from pandas.tseries.offsets import MonthEnd
 from datetime import datetime, timedelta
 
@@ -8,7 +8,6 @@ def process_funcionario(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame,
         TODO: doc string
     """
 
-    # Incluir o ano comp e mes comp
     _pfperff_group_by_codcoligada_chapa_ano_mes_comp = (pfperff
                                                         .assign(liquido=lambda df: df['liquido'].astype(float))
                                                         .groupby(by=['codcoligada', 'chapa', 'anocomp', 'mescomp'])['liquido'].sum()
@@ -22,36 +21,76 @@ def process_funcionario(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame,
     _pffinanc_group_by_ano_mes_comp = pffinanc.groupby(by=['anocomp', 'mescomp',
                                                            'chapa', 'codcoligada'])['valor'].count().reset_index()
 
-    return (pfunc
+    _pparam_anterior = (pparam
+        .assign(_datacompanterior=lambda df: to_datetime(df['mescomp'].astype(str) + '-' + df['anocomp'].astype(str), format='%m-%Y') - DateOffset(months=1))
+        .assign(anocomp=lambda df: df['_datacompanterior'].dt.year)
+        .assign(mescomp=lambda df: df['_datacompanterior'].dt.month)
+        [[ 'anocomp',  'mescomp', 'codcoligada' ]]
+    )
+
+    # Funcionários ativos devem utilizar a competência anterior
+    _func_ativo = (pfunc
+            .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
+            .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
+            .merge(_pparam_anterior, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
+            .query('codsituacao != "D"')
+            [[ 'cgc', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'nome', 'codsituacao', 'telefone1', 'codcoligada', 'salario', 'anocomp', 'mescomp' ]]
+    )
+
+    # Funcionários demitidos na competência atual devem utilizar a competência anterior
+    _func_demitido_atual = (pfunc
             .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .merge(pparam, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
-            .assign(_datacompanterior=lambda df: to_datetime(df['mescomp'].astype(str) + '-' + df['anocomp'].astype(str), format='%m-%Y') - DateOffset(months=1))
-            .assign(_anocompanterior=lambda df: df['_datacompanterior'].dt.year)
-            .assign(_mescompanterior=lambda df: df['_datacompanterior'].dt.month)
-            .merge(_pffinanc_group_by_ano_mes_comp, left_on=['codcoligada', 'chapa', '_anocompanterior', '_mescompanterior'], right_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], how='inner')
-            .merge(_pfperff_group_by_codcoligada_chapa_ano_mes_comp, left_on=['codcoligada', 'chapa', '_anocompanterior', '_mescompanterior'], right_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], how='left')
-            .merge(_pfemprt_group_by_codcoligada_chapa, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='left')
-            .query('codsituacao != "D"')
-            .assign(emprestimoexterno=lambda df: ~df['saldodevedor'].isna() & df['saldodevedor'] > 0.0)
-            .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
-            .assign(codrecisaorais=lambda df: None)
-            .assign(consignavel=lambda df: df['liquido'] * 0.3)
-            [[
-                'cnpj', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'consignavel',
-                'emprestimoexterno', 'nome', 'salario', 'codsituacao', 'telefone1',
-                'codrecisaorais'
-            ]]
-            .rename({
-                'dataadmissao': 'admissao',
-                'datademissao': 'demissao',
-                'codpessoa': 'chavefuncionario',
-                'codsituacao': 'situacaofuncionario',
-                'telefone1': 'telefone',
-                'chapa': 'matriculafuncionario',
-                'cpf': 'cpffuncionario'
-            }, axis=1))
+            .rename({ 'anocomp': 'demissao_anocomp', 'mescomp': 'demissao_mescomp' }, axis=1).reset_index()
+            .query('codsituacao == "D"')
+            .assign(_datademissao=lambda df: to_datetime(df['datademissao'], format='%Y-%m-%dT%H:%M:%S.%f'))
+            .query('_datademissao.dt.month == demissao_mescomp & _datademissao.dt.year == demissao_anocomp')
+            .merge(_pparam_anterior, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
+            [[ 'cgc', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'nome', 'codsituacao', 'telefone1', 'codcoligada', 'salario', 'anocomp', 'mescomp' ]]
+    )
 
+    # Funcionários demitidos na competência anterior devem utilizar a mesma
+    _func_demitido = (pfunc
+            .merge(ppessoa, left_on=['codpessoa'], right_on=['codigo'], how='inner')
+            .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
+            .query('codsituacao == "D"')
+            .merge(_pparam_anterior, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
+            .assign(_datademissao=lambda df: to_datetime(df['datademissao'], format='%Y-%m-%dT%H:%M:%S.%f'))
+            .query('_datademissao.dt.month == mescomp & _datademissao.dt.year == anocomp')
+            [[ 'cgc', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'nome', 'codsituacao', 'telefone1', 'codcoligada', 'salario', 'anocomp', 'mescomp' ]]
+    )
+
+    return (concat(
+            [
+                _func_ativo,
+                _func_demitido,
+                _func_demitido_atual
+            ],
+            ignore_index=True)
+        .drop_duplicates()
+        .reset_index(drop=True)
+        .merge(_pffinanc_group_by_ano_mes_comp, left_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], right_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], how='inner')
+        .merge(_pfperff_group_by_codcoligada_chapa_ano_mes_comp, left_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], right_on=['codcoligada', 'chapa', 'anocomp', 'mescomp'], how='left')
+        .merge(_pfemprt_group_by_codcoligada_chapa, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='left')
+        .assign(emprestimoexterno=lambda df: ~df['saldodevedor'].isna() & df['saldodevedor'] > 0.0)
+        .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
+        .assign(codrecisaorais=lambda df: None)
+        .assign(consignavel=lambda df: df['liquido'] * 0.3)
+        [[
+            'cnpj', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'consignavel',
+            'emprestimoexterno', 'nome', 'salario', 'codsituacao', 'telefone1',
+            'codrecisaorais'
+        ]]
+        .rename({
+            'dataadmissao': 'admissao',
+            'datademissao': 'demissao',
+            'codpessoa': 'chavefuncionario',
+            'codsituacao': 'situacaofuncionario',
+            'telefone1': 'telefone',
+            'chapa': 'matriculafuncionario',
+            'cpf': 'cpffuncionario'
+        }, axis=1))
 
 def process_recisao(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame, pffinanc: DataFrame, trecisao: DataFrame, pparamadicionais: DataFrame) -> DataFrame:
     """
