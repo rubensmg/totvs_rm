@@ -66,7 +66,7 @@ def process_geracao_arquivo(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFr
             .rename({ 'valor_parcela': 'valor' }, axis=1)
         )
 
-    df.loc[df['integradocreditas'] == True, 'evento'] = df['eventodescontobv'].astype(str)
-    df.loc[df['integradobv'] == True, 'evento'] = df['eventodescontocreditas'].astype(str)
+    df.loc[df['integradocreditas'] == True, 'evento'] = df['eventobasecreditas'].astype(str)
+    df.loc[df['integradobv'] == True, 'evento'] = df['eventobasebv'].astype(str)
 
     return df[[ 'chapa', 'datapagamento', 'horapagamento', 'referencia', 'valor', 'evento' ]]

@@ -106,7 +106,6 @@ class DataIngestion:
                     'CodColigada': 'codcoligada'
                 }, axis=1))
 
-    @ingestion_development_cache
     def pparamadicionais(self) -> DataFrame:
         staging = 'pparamadicionais'
         columns = ['CodColigada', 'AnoCompCarolPFFINANC', 'AnoCompCarolPFPERFF', 'EventoBaseBV', 'EventoBaseCreditas',
