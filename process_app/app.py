@@ -57,6 +57,9 @@ pparam = di_rm.pparam()
 print_carol('Download pfhstaft')
 pfhstaft = di_rm.pfhstaft()
 
+print_carol('Download pparam')
+pparam = di_rm.pparam()
+
 print_carol('Download tsalarycount')
 tsalarycount = di_rm.tsalarycount()
 
@@ -107,6 +110,7 @@ print_carol('Processing count_faixa')
 count_faixa = process_count_faixa(pfunc,
                                   psecao,
                                   tsalarycount)
+print(count_faixa)
 
 print_carol('Processing media_salarial')
 media_salarial = process_media_salarial(pfunc,

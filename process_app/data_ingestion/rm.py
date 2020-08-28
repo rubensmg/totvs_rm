@@ -195,7 +195,7 @@ class DataIngestion:
 
     def pfhstaft(self) -> DataFrame:
         staging = 'pfhstaft'
-        columns = ['CodColigada', 'Chapa', 'DtInicio', 'DtFinal']
+        columns = ['CodColigada', 'Chapa', 'DtInicio', 'DtFinal', 'Tipo']
 
         return (self.stag.fetch_parquet(staging_name=staging,
                                         connector_name=self.connector_name,
@@ -212,7 +212,8 @@ class DataIngestion:
                     'CodColigada': 'codcoligada',
                     'Chapa': 'chapa',
                     'DtInicio': 'dtinicio',
-                    'DtFinal': 'dtfinal'
+                    'DtFinal': 'dtfinal',
+                    'Tipo': 'tipoafastamento'
                 }, axis=1))
 
     def tsalarycount(self) -> DataFrame:

@@ -76,7 +76,7 @@ def process_funcionario(pfunc: DataFrame, ppessoa: DataFrame, psecao: DataFrame,
         .assign(emprestimoexterno=lambda df: ~df['saldodevedor'].isna() & df['saldodevedor'] > 0.0)
         .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
         .assign(codrecisaorais=lambda df: None)
-        .assign(consignavel=lambda df: df['liquido'] * 0.3)
+        .assign(consignavel=lambda df: (df['liquido'] * 0.3).round(2))
         [[
             'cnpj', 'chapa', 'dataadmissao', 'cpf', 'datademissao', 'consignavel',
             'emprestimoexterno', 'nome', 'salario', 'codsituacao', 'telefone1',
@@ -192,6 +192,7 @@ def process_geracao_folha(pfunc: DataFrame, ppessoa: DataFrame, pparam: DataFram
             .query('codsituacao != "E" & codsituacao != "W" & codsituacao != "R"')
             .merge(pparam, left_on=['codcoligada'], right_on=['codcoligada'], how='inner')
             .merge(pfhstaft, left_on=['codcoligada', 'chapa'], right_on=['codcoligada', 'chapa'], how='inner')
+            .query('tipoafastamento != "N"')
             .assign(_dtinicio=lambda df: df['dtinicio'])
             .assign(_dtfinal=lambda df: df['dtfinal'])
             .replace({ '_dtfinal': '0001-01-01T00:00:00.000Z', '_dtinicial': '0001-01-01T00:00:00.000Z' }, '2099-12-31T23:59:59.000Z')
@@ -221,19 +222,22 @@ def process_count_faixa(pfunc: DataFrame, psecao: DataFrame, tsalarycount: DataF
     _pfunc = pfunc.copy()
     _pfunc['faixa'] = _pfunc['salario'].apply(lambda element: tsalarycount.iloc[tsalarycount.index.get_loc(float(element))]['identifier'])
 
-    return (_pfunc
+    df = (_pfunc
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .query('codsituacao != "D"')
             .groupby(by=['cgc', 'faixa'])['chapa'].count().reset_index()
+            .assign(total=lambda df: df['chapa'].astype(int))
+            .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
             [[
-                'cgc', 'faixa', 'chapa'
+                'cnpj', 'faixa', 'total'
             ]]
-            .rename({
-                'cgc': 'cnpj',
-                'chapa': 'total'
-            }, axis=1)
-            .pivot_table('total', ['cnpj'], 'faixa').reset_index())
+            .pivot_table('total', ['cnpj'], 'faixa').reset_index()
+        )
 
+    return (
+        DataFrame(df, columns=['cnpj'] + tsalarycount['identifier'].tolist())
+        .fillna(0)
+    )
 
 def process_media_salarial(pfunc: DataFrame, psecao: DataFrame) -> DataFrame:
     """
@@ -244,7 +248,7 @@ def process_media_salarial(pfunc: DataFrame, psecao: DataFrame) -> DataFrame:
             .merge(psecao, left_on=['codcoligada', 'codsecao'], right_on=['codcoligada', 'codigo'], how='inner')
             .query('codsituacao != "D"')
             .assign(cnpj=lambda df: df['cgc'].str.replace(r'\.|\/|\-', ''))
-            .assign(salario=lambda df: df['salario'].astype(float))
+            .assign(salario=lambda df: df['salario'].astype(float).round(2))
             .groupby(by=['cnpj'])['salario'].mean().reset_index()
             [[
                 'cnpj', 'salario'
